@@ -26,6 +26,7 @@ from io import BytesIO
 from starlette.responses import StreamingResponse
 from fastapi import APIRouter, Depends, HTTPException, Response, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from app.utils.utils_minio import minio_client
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_current_user, get_db, get_email_service, require_role
 from app.schemas.pagination_schema import EnhancedPagination
@@ -269,3 +270,23 @@ async def generate_qr(data: str):
     img_byte_arr.seek(0)
 
     return StreamingResponse(img_byte_arr, media_type="image/png")
+
+
+@router.get("/generate-and-store-qr/")
+async def generate_and_store_qr(data: str):
+
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color='black', back_color='white')
+
+    img_byte_arr = BytesIO()
+    img.save(img_byte_arr)
+    img_byte_arr.seek(0)
+
+    file_name = f"qr_codes/{data}.png"
+
+    client = minio_client()
+    client.put_object("qrcode-minio-bucket", file_name, img_byte_arr, length=img_byte_arr.getbuffer().nbytes)
+
+    return {"message": "QR code generated and stored successfully!", "file_name": file_name}
