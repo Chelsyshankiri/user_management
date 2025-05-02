@@ -35,3 +35,10 @@ class EmailService:
             "verification_url": verification_url,
             "email": user.email
         }, 'email_verification')
+        
+    async def send_promotion_mail(self, user_email: str):
+        self.smtp_client.send_email(
+            subject="Congrats!! You are a professional Now!",
+            html_content=f"Hi {user_email}. This is to inform you that you have been promoted to professional status. Congratulations!!",
+            recipient=user_email
+        )
