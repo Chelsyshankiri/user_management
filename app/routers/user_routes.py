@@ -108,7 +108,7 @@ async def update_user(user_id: UUID, user_update: UserUpdate, request: Request, 
         profile_picture_url=updated_user.profile_picture_url,
         github_profile_url=updated_user.github_profile_url,
         linkedin_profile_url=updated_user.linkedin_profile_url,
-        is_professional=update_user.is_professional,
+        is_professional=updated_user.is_professional,
         created_at=updated_user.created_at,
         updated_at=updated_user.updated_at,
         links=create_user_links(updated_user.id, request)
