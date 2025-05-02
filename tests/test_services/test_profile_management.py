@@ -35,13 +35,13 @@ async def test_update_user_dont_exist(async_client, admin_token):
     dummy_user_id = uuid.uuid4()
     
     headers = {"Authorization": f"Bearer {admin_token}"}
-    response = await async_client.put(f"/profile-update", json=dummy_updated_data, headers=headers)
+    response = await async_client.put(f"/profile-update/", json=dummy_updated_data, headers=headers)
     assert response.status_code == 400
     assert "User not found" in response.json().get("detail", "")
 
 @pytest.mark.asyncio
 async def test_update_self_profile_failure(async_client):
-    response = await async_client.put("/profile-update", json=dummy_updated_data)
+    response = await async_client.put("/profile-update/", json=dummy_updated_data)
     assert response.status_code == 401
     
 #Testing Promotions
